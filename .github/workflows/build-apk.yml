@@ -1,0 +1,29 @@
+name: Build APK
+on: [push, pull_request]  # atau workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      # Beri izin eksekusi untuk gradlew
+      - name: Make Gradlew Executable
+        run: chmod +x gradlew
+      
+      # Build APK Debug (tidak perlu signing)
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+      
+      # Upload hasil sebagai artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/*.apk
